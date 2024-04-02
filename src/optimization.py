@@ -1,52 +1,56 @@
-def optimize_decision(preferences, data):
+def optimize_comprehensive_plan(preferences, education_data, career_data):
     """
-    Generic optimization function to determine the best choice based on given preferences and data.
-    
+    Expands the optimize_decision function to handle comprehensive planning.
+
     Parameters:
     - preferences: A dictionary containing user preferences.
-    - data: A dataset containing possible choices with their attributes.
-    
+    - education_data: Dataset containing education paths.
+    - career_data: Dataset containing career options.
+
     Returns:
-    - The optimal choice based on the optimization criteria.
+    - A comprehensive plan including education, career, and retirement recommendations.
     """
-    
     # Example criteria from preferences
-    max_cost = preferences.get('max_cost', float('inf'))
+    current_age = preferences.get('current_age')
+    retirement_age = preferences.get('retirement_age')
     
-    # Convert data to a list of tuples (choice, cost, benefit) for easier processing
-    choices = [(item['choice'], item['cost'], item['benefit']) for index, item in data.iterrows()]
+    # Convert data to a list of tuples for easier processing
+    education_choices = [(item['path'], item['duration'], item['cost'], item['benefit']) for index, item in education_data.iterrows()]
+    career_choices = [(item['career'], item['industry'], item['salary'], item['satisfaction']) for index, item in career_data.iterrows()]
     
-    # Sort choices based on cost to facilitate the dynamic programming approach
-    choices.sort(key=lambda x: x[1])
+    # Combine education and career choices
+    all_choices = education_choices + career_choices
+    
+    # Sort choices based on a combined metric to facilitate dynamic programming
+    all_choices.sort(key=lambda x: x[2])  # Example: sort by cost
     
     # Initialize memoization table
     memo = {}
     
-    def dp(i, remaining_cost):
-        # Base case: no more choices or no remaining cost
-        if i >= len(choices) or remaining_cost <= 0:
+    def dp(i, remaining_years):
+        # Base case: reached retirement age or no more choices
+        if i >= len(all_choices) or remaining_years <= 0:
             return 0
         
-        # If this subproblem has already been solved, return the stored result
-        if (i, remaining_cost) in memo:
-            return memo[(i, remaining_cost)]
+        if (i, remaining_years) in memo:
+            return memo[(i, remaining_years)]
         
         # Unpack the current choice
-        _, cost, benefit = choices[i]
+        _, duration, cost, benefit = all_choices[i]
         
         # Decision to skip the current choice
-        skip_choice = dp(i + 1, remaining_cost)
+        skip_choice = dp(i + 1, remaining_years)
         
-        # Decision to take the current choice, if cost allows
+        # Decision to take the current choice, if duration allows
         take_choice = 0
-        if cost <= remaining_cost:
-            take_choice = benefit + dp(i + 1, remaining_cost - cost)
+        if duration <= remaining_years:
+            take_choice = benefit + dp(i + 1, remaining_years - duration)
         
-        # Store the result in the memoization table and return
-        memo[(i, remaining_cost)] = max(skip_choice, take_choice)
-        return memo[(i, remaining_cost)]
+        # Store the result and return
+        memo[(i, remaining_years)] = max(skip_choice, take_choice)
+        return memo[(i, remaining_years)]
     
-    # Start the dynamic programming process with all choices available and the max cost constraint
-    optimal_benefit = dp(0, max_cost)
+    remaining_years = retirement_age - current_age
+    optimal_benefit = dp(0, remaining_years)
     
     return optimal_benefit
