@@ -34,4 +34,4 @@ def optimize_education(preferences, data, undergrad_duration=None):
     filtered_data['benefit_to_cost'] = filtered_data['benefit'] / filtered_data['cost']
     optimal_path = filtered_data.loc[filtered_data['benefit_to_cost'].idxmax()]
     
-    return optimal_path['path']
+    return optimal_path['name']

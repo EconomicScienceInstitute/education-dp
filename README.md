@@ -82,9 +82,9 @@ Based on the inputs, the project will output:
 
 The project utilizes dynamic programming algorithms implemented in Python to optimize the decision-making process. Key components include:
 
-- **Data Models**: CSV files containing data on education paths (`education_data.csv`) and career options (`career_data.csv`) are used as inputs for the optimization algorithms.
+- **Data Models**: The project dynamically generates data based on real-time user inputs directly within the application.
 - **Optimization Algorithms**: Implemented in `src/optimization.py`, these algorithms consider various paths and choices to recommend the most beneficial plan based on the user's inputs.
-- **User Interface**: Built with Streamlit (`src/main.py`), the interface collects user inputs and displays the recommended plans.
+- **User Interface**: Built with Streamlit (`src/main.py`), the interface collects user inputs and uses them directly for optimization.
 
 ### Example Usage
 
