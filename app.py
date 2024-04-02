@@ -6,7 +6,7 @@ def save_input_to_csv(data, filename):
     df = pd.DataFrame([data])
     df.to_csv(f'data/{filename}.csv', index=False)
 
-# Streamlit app
+# Streamlit app 
 def main():
     st.title("EduDynamic User Input")
 
