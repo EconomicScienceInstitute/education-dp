@@ -89,3 +89,18 @@ The project utilizes dynamic programming algorithms implemented in Python to opt
 ### Example Usage
 
 After running the application, users will be prompted to enter their information and preferences. The application will then process this data and display an optimal life plan, including education and career recommendations, tailored to the user's specific goals and constraints.
+
+help mermaid wont work i dont wanna use live editor lol
+
+```mermaid
+stateDiagram-v2
+    [*] --> Idle
+    Idle --> Active: Activate
+    Active --> Idle: Deactivate
+    Active --> [*]: Finish
+
+    state Active {
+        [*] --> Working
+        Working --> Waiting: Wait
+        Waiting --> Working: Work
+    }
