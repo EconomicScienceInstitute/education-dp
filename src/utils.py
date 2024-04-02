@@ -1,16 +1,21 @@
+import os
 import pandas as pd
 
-def load_data():
+def load_data(filename):
     """
-    Loads education and career data from CSV files.
+    Loads data from a specified CSV file.
 
-    This function reads data from 'education_data.csv' and 'career_data.csv' files located in the 'data' directory.
-    It returns two pandas DataFrames containing the loaded data for further processing.
+    Parameters:
+    - filename (str): The name of the CSV file to load.
 
     Returns:
-    - education_data (DataFrame): A pandas DataFrame containing the education data.
-    - career_data (DataFrame): A pandas DataFrame containing the career data.
+    - DataFrame: A pandas DataFrame containing the loaded data.
     """
-    education_data = pd.read_csv('data/education_data.csv')
-    career_data = pd.read_csv('data/career_data.csv')
-    return education_data, career_data
+    # Construct an absolute path to the 'data' directory
+    base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    data_dir = os.path.join(base_dir, 'data')
+    file_path = os.path.join(data_dir, filename)
+    
+    data = pd.read_csv(file_path)
+    return data
+

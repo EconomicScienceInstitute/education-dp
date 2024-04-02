@@ -12,7 +12,7 @@ The EduDynamic project aims to model and optimize education and career planning 
 
 ## Project Structure
 
-````
+```
 EduDynamic/
 │
 ├── src/
@@ -38,6 +38,7 @@ EduDynamic/
 │
 ├── requirements.txt
 └── README.md
+```
 
 ## File Descriptions
 
@@ -53,3 +54,38 @@ EduDynamic/
 - `docs/project_documentation.md`: Detailed documentation of the project, including the models' assumptions, limitations, and usage instructions.
 - `requirements.txt`: Lists all Python libraries required by the project.
 - `README.md`: Provides an overview of the project, installation instructions, and basic usage examples.
+
+## Project Design
+
+### Target Input/Output
+
+The EduDynamic project is designed to take user inputs regarding their personal preferences, financial constraints, career goals, and educational aspirations to provide a tailored, dynamic plan for education and career progression. Here's an overview of the target input and output for the project:
+
+#### Input
+
+Users will provide the following information through an interactive interface:
+
+- **Basic Information**: Current age, current stage (e.g., High School, Undergraduate), and years in the current stage.
+- **Education Preferences**: Plans for pursuing undergraduate and/or graduate degrees, fields of study, and anticipated duration for each degree.
+- **Career Preferences**: Preferred industries, job roles, and minimum salary expectations.
+- **Lifestyle and Financial Stability Preferences**: Desired retirement age, lifestyle expectations, and vacation frequency.
+
+#### Output
+
+Based on the inputs, the project will output:
+
+- **Optimal Education Path**: Recommendations for education paths, including the type of degree, field of study, and institutions, tailored to the user's preferences and constraints.
+- **Career Planning**: Career options that align with the user's education, preferred industry, and salary expectations.
+- **Comprehensive Life Plan**: A detailed plan that integrates education, career, and retirement planning, offering a roadmap from the current stage to retirement.
+
+### Implementation Details
+
+The project utilizes dynamic programming algorithms implemented in Python to optimize the decision-making process. Key components include:
+
+- **Data Models**: CSV files containing data on education paths (`education_data.csv`) and career options (`career_data.csv`) are used as inputs for the optimization algorithms.
+- **Optimization Algorithms**: Implemented in `src/optimization.py`, these algorithms consider various paths and choices to recommend the most beneficial plan based on the user's inputs.
+- **User Interface**: Built with Streamlit (`src/main.py`), the interface collects user inputs and displays the recommended plans.
+
+### Example Usage
+
+After running the application, users will be prompted to enter their information and preferences. The application will then process this data and display an optimal life plan, including education and career recommendations, tailored to the user's specific goals and constraints.

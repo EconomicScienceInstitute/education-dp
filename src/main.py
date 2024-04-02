@@ -2,8 +2,10 @@ import streamlit as st
 import pandas as pd
 from education_model import optimize_education
 from career_model import recommend_career
-from utils import load_data
-from src.optimization import optimize_comprehensive_plan
+# from utils import load_data # Removed as we're not using CSV files for data loading anymore
+# from optimization import optimize_comprehensive_plan # Assuming this is now handled differently as per instructions
+import os
+print(os.getcwd())
 
 # Function to save user input to CSV
 def save_input_to_csv(data, filename):
@@ -21,7 +23,15 @@ def save_input_to_csv(data, filename):
     None
     """
     df = pd.DataFrame([data])
-    df.to_csv(f'data/{filename}.csv', index=False)
+    # Convert DataFrame to CSV for download instead of saving to a directory
+    csv = df.to_csv(index=False)
+    # Streamlit download button to allow users to save the file locally
+    st.download_button(
+        label="Download Your Input Data as CSV",
+        data=csv,
+        file_name=f"{filename}.csv",
+        mime="text/csv",
+    )
 
 def main():
     def collect_user_preferences():
@@ -61,14 +71,36 @@ def main():
         Returns:
         None
         """
-        education_data = load_data("education_paths.csv")
-        career_data = load_data("career_options.csv")
+        # Assuming in-memory data or fetched data for optimization
+        education_data = {...}
+        career_data = {...}
 
-        comprehensive_plan = optimize_comprehensive_plan(preferences, education_data, career_data)
-        if comprehensive_plan:
+        # Optimize based on user inputs
+        optimized_education_path = optimize_education(preferences, education_data)
+        recommended_career = recommend_career(preferences, career_data)
+
+        # Prepare results for CSV export
+        results = {
+            "Optimized Education Path": optimized_education_path,
+            "Recommended Career": recommended_career,
+        }
+        df_results = pd.DataFrame([results])
+
+        # Convert DataFrame to CSV for download
+        csv = df_results.to_csv(index=False)
+
+        # Streamlit download button for results
+        st.download_button(
+            label="Download Your Optimization Results as CSV",
+            data=csv,
+            file_name="optimization_results.csv",
+            mime="text/csv",
+        )
+        
+        if optimized_education_path and recommended_career:
             st.write("Optimal Life Plan based on your inputs:")
-            for step in comprehensive_plan:
-                st.write(f"- {step}")
+            st.write(f"Optimized Education Path: {optimized_education_path}")
+            st.write(f"Recommended Career Path: {recommended_career}")
         else:
             st.write("No optimal plan found based on the inputs.")
     st.title("EduDynamic Planning")
@@ -93,8 +125,9 @@ def main():
     vacation_frequency = st.selectbox("Vacation frequency per year", ["None", "1-2 times", "3-5 times", "More than 5 times"])
     # Add more preferences as needed
 
-    # Process and display recommendations based on inputs
-    # This part remains largely unchanged, but you may need to adjust the models to consider the new inputs
+    if st.button('Generate Optimal Plan'):
+        preferences = collect_user_preferences()
+        display_recommendations(preferences)
 
 if __name__ == "__main__":
     main()
