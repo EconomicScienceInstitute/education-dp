@@ -3,6 +3,7 @@ import pandas as pd
 from education_model import optimize_education
 from career_model import recommend_career
 from utils import load_data
+from src.optimization import optimize_comprehensive_plan
 
 # Function to save user input to CSV
 def save_input_to_csv(data, filename):
@@ -63,11 +64,13 @@ def main():
         education_data = load_data("education_paths.csv")
         career_data = load_data("career_options.csv")
 
-        optimized_education_path = optimize_education(preferences, education_data, preferences.get("undergrad_duration"))
-        recommended_career = recommend_career(preferences, career_data)
-
-        st.write(f"Recommended Education Path: {optimized_education_path}")
-        st.write(f"Recommended Career: {recommended_career}")
+        comprehensive_plan = optimize_comprehensive_plan(preferences, education_data, career_data)
+        if comprehensive_plan:
+            st.write("Optimal Life Plan based on your inputs:")
+            for step in comprehensive_plan:
+                st.write(f"- {step}")
+        else:
+            st.write("No optimal plan found based on the inputs.")
     st.title("EduDynamic Planning")
 
     # Collecting basic user information

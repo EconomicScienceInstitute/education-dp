@@ -50,7 +50,16 @@ def optimize_comprehensive_plan(preferences, education_data, career_data):
         memo[(i, remaining_years)] = max(skip_choice, take_choice)
         return memo[(i, remaining_years)]
     
-    remaining_years = retirement_age - current_age
-    optimal_benefit = dp(0, remaining_years)
+    def reconstruct_path(i, remaining_years):
+        if i >= len(all_choices) or remaining_years <= 0:
+            return []
+        decision = memo[(i, remaining_years)]
+        _, duration, _, _ = all_choices[i]
+        if decision == memo.get((i + 1, remaining_years), 0):
+            return reconstruct_path(i + 1, remaining_years)
+        else:
+            return [all_choices[i]] + reconstruct_path(i + 1, remaining_years - duration)
     
-    return optimal_benefit
+    remaining_years = retirement_age - current_age
+    optimal_path = reconstruct_path(0, remaining_years)
+    return optimal_path
