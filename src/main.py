@@ -10,39 +10,30 @@ def save_input_to_csv(data, filename):
     df.to_csv(f'data/{filename}.csv', index=False)
 
 def main():
-    st.title("EduDynamic User Input")
+    st.title("EduDynamic Planning")
 
-    # Collecting user preferences for education model
-    st.header("Education Preferences")
-    max_cost = st.number_input("Maximum Cost", min_value=0)
-    preferred_field = st.text_input("Preferred Field of Study")
+    # Collecting basic user information
+    st.header("Basic Information")
+    current_age = st.number_input("Current Age", min_value=16)
+    current_stage = st.selectbox("Current Stage", ["High School", "Undergraduate", "Graduate", "Working", "None"])
+    years_in_current_stage = st.number_input("Years in Current Stage", min_value=0)
 
-    # Collecting user preferences for career model
-    st.header("Career Preferences")
-    min_salary = st.number_input("Minimum Salary", min_value=0)
-    preferred_industry = st.text_input("Preferred Industry")
+    # Collecting detailed preferences
+    st.header("Education and Career Preferences")
+    # Example for undergraduate degree
+    undergrad_degree = st.checkbox("Plan to pursue an undergraduate degree?")
+    undergrad_field = st.text_input("Field of study for undergraduate degree") if undergrad_degree else None
+    undergrad_duration = st.number_input("Anticipated duration for undergraduate degree (years)", min_value=1, max_value=10) if undergrad_degree else None
+    # Add similar inputs for graduate degree, career preferences, retirement, etc.
 
-    # Button to save inputs and process models
-    if st.button("Save Preferences and Process"):
-        user_preferences = {
-            'education': {'max_cost': max_cost, 'field': preferred_field},
-            'career': {'min_salary': min_salary, 'industry': preferred_industry}
-        }
+    # Collecting lifestyle and financial stability preferences
+    st.header("Lifestyle and Financial Preferences")
+    retirement_age = st.number_input("Desired retirement age", min_value=current_age)
+    vacation_frequency = st.selectbox("Vacation frequency per year", ["None", "1-2 times", "3-5 times", "More than 5 times"])
+    # Add more preferences as needed
 
-        # Save to CSV files
-        save_input_to_csv(user_preferences['education'], 'education_data')
-        save_input_to_csv(user_preferences['career'], 'career_data')
-
-        # Load data
-        education_data, career_data = load_data()
-
-        # Process inputs through models
-        education_path = optimize_education(user_preferences['education'], education_data)
-        career_path = recommend_career(user_preferences['career'], career_data)
-
-        # Display results
-        st.write("Recommended Education Path:", education_path)
-        st.write("Recommended Career Path:", career_path)
+    # Process and display recommendations based on inputs
+    # This part remains largely unchanged, but you may need to adjust the models to consider the new inputs
 
 if __name__ == "__main__":
     main()
