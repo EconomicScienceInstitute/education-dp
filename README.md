@@ -10,7 +10,9 @@ runme:
 
 The EduDynamic project aims to model and optimize education and career planning decisions using dynamic programming. It will allow users to input their personal preferences, financial constraints, and career goals to receive tailored advice on education paths, potential investments, and career choices.
 
-```
+## Project Structure
+
+````
 EduDynamic/
 │
 ├── src/
@@ -36,9 +38,9 @@ EduDynamic/
 │
 ├── requirements.txt
 └── README.md
-```
 
 ## File Descriptions
+
 - `src/__init__.py`: Initializes the source code directory as a Python package.
 - `src/main.py`: The entry point of the application. It will handle user inputs and display outputs based on the models' advice.
 - `src/education_model.py`: Contains the dynamic programming model for optimizing education decisions, including choosing majors, deciding between trade school and university, etc.
