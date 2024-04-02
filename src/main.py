@@ -1,5 +1,6 @@
 import streamlit as st
 import pandas as pd
+import plotly.express as px
 from education_model import optimize_education
 from career_model import recommend_career
 import os
@@ -30,43 +31,39 @@ def main():
         return preferences
 
     def display_recommendations(preferences):
-        education_data = pd.DataFrame({
-            "name": ["Computer Science", "Business Administration"],
-            "duration": [4, 4],
-            "cost": [40000, 35000],
-            "benefit": [100000, 90000]
-        })
-        career_data = pd.DataFrame({
-            "career": ["Software Engineer", "Project Manager"],
-            "industry": ["Technology", "Business"],
-            "salary": [100000, 85000],
-            "satisfaction": [80, 70]
-        })
+        education_data = {
+            "paths": [
+                {"name": "Computer Science", "duration": 4, "cost": 40000, "benefit": 100000},
+                {"name": "Business Administration", "duration": 4, "cost": 35000, "benefit": 90000},
+            ]
+        }
+        career_data = {
+            "careers": [
+                {"name": "Software Engineer", "industry": "Technology", "salary": 100000, "satisfaction": 80},
+                {"name": "Project Manager", "industry": "Business", "salary": 85000, "satisfaction": 70},
+            ]
+        }
 
         optimized_education_path = optimize_education(preferences, education_data)
         recommended_career = recommend_career(preferences, career_data)
 
-        results = {
-            "Optimized Education Path": optimized_education_path,
-            "Recommended Career": recommended_career,
+        # Generate the timeline data
+        timeline_data = {
+            "Start Age": [step['start_age'] for step in optimized_education_path],
+            "End Age": [step['end_age'] for step in optimized_education_path],
+            "Description": [step['description'] for step in optimized_education_path]
         }
-        df_results = pd.DataFrame([results])
 
-        csv = df_results.to_csv(index=False)
+        # Create a DataFrame from the timeline data
+        df_timeline = pd.DataFrame(timeline_data)
 
-        st.download_button(
-            label="Download Your Optimization Results as CSV",
-            data=csv,
-            file_name="optimization_results.csv",
-            mime="text/csv",
-        )
+        # Create a Gantt chart (timeline) using Plotly
+        fig = px.timeline(df_timeline, x_start="Start Age", x_end="End Age", y="Description", labels={"Description": "Life Stage"})
+        fig.update_yaxes(autorange="reversed")  # Optional: reverse the Y-axis to have the earliest stage at the top
+
+        # Display the Plotly figure in Streamlit
+        st.plotly_chart(fig)
         
-        if optimized_education_path and recommended_career:
-            st.write("Optimal Life Plan based on your inputs:")
-            st.write(f"Optimized Education Path: {optimized_education_path}")
-            st.write(f"Recommended Career Path: {recommended_career}")
-        else:
-            st.write("No optimal plan found based on the inputs.")
     st.title("EduDynamic Planning")
 
     st.header("Basic Information")
