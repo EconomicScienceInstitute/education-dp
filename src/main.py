@@ -44,14 +44,16 @@ def main():
             ]
         }
 
-        optimized_education_path = optimize_education(preferences, education_data)
-        recommended_career = recommend_career(preferences, career_data)
+        education_data_df = pd.DataFrame(education_data['paths'])
+        optimized_education_path = optimize_education(preferences, education_data_df)
+        career_data_df = pd.DataFrame(career_data['careers'])
+        recommended_career = recommend_career(preferences, career_data_df)
 
-        # Generate the timeline data
+        # Assuming optimized_education_path is a string with the path name
         timeline_data = {
-            "Start Age": [step['start_age'] for step in optimized_education_path],
-            "End Age": [step['end_age'] for step in optimized_education_path],
-            "Description": [step['description'] for step in optimized_education_path]
+            "Start Age": [current_age],  # Example start age, adjust as needed
+            "End Age": [current_age + 4],  # Example end age, adjust as needed
+            "Description": [optimized_education_path]  # The name of the path
         }
 
         # Create a DataFrame from the timeline data
