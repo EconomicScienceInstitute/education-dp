@@ -1,6 +1,5 @@
-def recommend_career(preferences, data):
+def recommend_career(preferences, data, preferred_industry=None):
     # Example criteria from preferences
-    preferred_industry = preferences.get('industry', None)
     min_salary = preferences.get('min_salary', 0)
     
     # Filter data based on preferences
