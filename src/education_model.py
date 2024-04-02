@@ -1,6 +1,21 @@
 import numpy as np
 
 def optimize_education(preferences, data, undergrad_duration=None):
+    """
+    Optimize education path based on user preferences and available data.
+
+    This function filters the available education paths based on the user's maximum cost preference, preferred field of study,
+    and, if specified, the maximum duration of undergraduate studies. It then calculates a benefit-to-cost ratio for each 
+    education path. The path with the highest benefit-to-cost ratio is selected as the optimal education path.
+
+    Parameters:
+    - preferences (dict): A dictionary containing user preferences, including maximum cost and field of study.
+    - data (DataFrame): A pandas DataFrame containing education path data, including cost, field, and duration.
+    - undergrad_duration (int, optional): The maximum duration (in years) for undergraduate studies. Defaults to None.
+
+    Returns:
+    - str: The name of the optimal education path based on the calculated benefit-to-cost ratio.
+    """
     # Example criteria from preferences
     max_cost = preferences.get('max_cost', np.inf)
     preferred_field = preferences.get('field', None)
