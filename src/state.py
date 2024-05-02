@@ -4,7 +4,7 @@ class State:
     """
     Represents the state of an individual in the simulation, including both static and stochastic attributes.
     """
-    def __init__(self, age, education_level, years_in_education, current_savings, retirement_age, inflation_rate, investment_return_rate, salary):
+    def __init__(self, age, education_level, years_in_education, years_of_experience, savings, retirement_age, inflation_rate, investment_return_rate, salary):
         """
         Initialize the state of an individual with given parameters.
         
@@ -12,7 +12,8 @@ class State:
         - age (int): Current age of the individual.
         - education_level (str): Highest level of education achieved.
         - years_in_education (int): Total years spent in education.
-        - current_savings (float): Current amount of savings.
+        - years_of_experience (int): Total years of work experience.
+        - savings (float): Current amount of savings, modified by education/work status.
         - retirement_age (int): Age at which the individual plans to retire.
         - inflation_rate (float): Annual inflation rate.
         - investment_return_rate (float): Annual return rate from investments.
@@ -21,11 +22,31 @@ class State:
         self.age = age
         self.education_level = education_level
         self.years_in_education = years_in_education
-        self.current_savings = current_savings
+        self.years_of_experience = years_of_experience  # Track years of experience
+        self.savings = savings  # Initialize savings, modified by education/work status
         self.retirement_age = retirement_age
         self.inflation_rate = inflation_rate
         self.investment_return_rate = investment_return_rate
         self.salary = salary  # Stochastic element that can change based on job performance
+
+    def update_savings_from_job(self, annual_salary):
+        self.savings += annual_salary  # Increase savings by the salary amount
+
+    def update_savings_from_education(self, annual_cost):
+        self.savings -= annual_cost  # Decrease savings by the cost of education
+
+    def simulate_year(self, action):
+        if action.type == 'work':
+            self.update_savings_from_job(action.salary)
+            self.years_of_experience += 1
+        elif action.type == 'study':
+            self.update_savings_from_education(action.cost)
+            self.years_in_education += 1
+
+    def calculate_salary(self):
+        base_salary = self.salary
+        # Add logic to adjust salary based on education and experience
+        return base_salary + (self.years_of_experience * 1000) + (self.years_in_education * 500)
 
     def __repr__(self):
         """
@@ -34,9 +55,9 @@ class State:
         This method returns a formatted string that includes all the attributes of the State instance with their respective values,
         making it easier to understand the current state of an object when printed or logged.
         """
-        return f"State(age={self.age}, education_level='{self.education_level}', years_in_education={self.years_in_education}, current_savings={self.current_savings}, retirement_age={self.retirement_age}, inflation_rate={self.inflation_rate}, investment_return_rate={self.investment_return_rate}, salary={self.salary})"
-
-
+        return f"State(age={self.age}, education_level='{self.education_level}', years_in_education={self.years_in_education}, 
+        years_of_experience={self.years_of_experience}, savings={self.savings}, retirement_age={self.retirement_age}, 
+        inflation_rate={self.inflation_rate}, investment_return_rate={self.investment_return_rate}, salary={self.salary})"
 class Parameters:
     """
     Holds the parameters for the simulation, including options for education and career, and transition probabilities.
@@ -92,8 +113,8 @@ def bellman_equation(state, parameters, jobs, education):
 
 # sample data for jobs and education paths
 jobs = [
-    Job(salary=50000, education_requirements='Bachelor', work_requirements=2, low_raise=1000, high_raise=5000),
-    Job(salary=80000, education_requirements='Master', work_requirements=5, low_raise=2000, high_raise=7000)
+    Job(salary=50000, education_requirements='Bachelor', work_requirements=2, low_raise=1000, high_raise=5000, years_in=2),
+    Job(salary=80000, education_requirements='Master', work_requirements=5, low_raise=2000, high_raise=7000, years_in=5)
 ]
 
 education_paths = [
@@ -106,7 +127,8 @@ initial_state = State(
     age=25,
     education_level='High School',
     years_in_education=12,
-    current_savings=10000,
+    years_of_experience=0,
+    savings=0,
     retirement_age=65,
     inflation_rate=0.02,
     investment_return_rate=0.05,
@@ -127,4 +149,3 @@ optimal_action, expected_value = bellman_equation(initial_state, simulation_para
 # Print the results
 print("Optimal Action:", optimal_action)
 print("Expected Value of Optimal Action:", expected_value)
-
