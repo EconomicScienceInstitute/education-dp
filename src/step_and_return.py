@@ -33,19 +33,27 @@ def get_salary(state):
   salary = random.randint(min_salary[x, y], max_salary[x, y])
   return salary
 
-def step(state, action):
-  this_years_salary = get_salary(state)
-  total_savings = state[2] + this_years_salary
+def possible_states(state, action):
+  poss_salary1 = get_salary(state)
+  poss_salary2 = get_salary(state)
   if action == 1:
-    total_savings -= 20000
+    total_savings1 = state[2] - 20000 + poss_salary1
+    total_savings2 = state[2] - 20000 + poss_salary2
+
     years_edu = state[0] + 1
     years_exp = state[1]
   else:
+    total_savings1 = state[2] + poss_salary1
+    total_savings2 = state[2] + poss_salary2
     years_exp = state[1] + 1
     years_edu = state[0]
 
+  state1 = (years_edu, years_exp, total_savings1)
+  state2 = (years_edu, years_exp, total_savings2)
+
   # return state
-  return (years_edu, years_exp, total_savings)
+  return [(0.5, state1),
+          (0.5, state2)]
 
 def reward(state, action):
   # return the current savings
