@@ -14,13 +14,17 @@ class Job:
             if random.random()>0.5:
                 self.salary=self.salary+ self.years_since_raise*random.uniform(self.lower_raise_bound,
                                                                                self.upper_raise_bound)
+    def __str__(self):
+        return f"Job(salary={self.salary}, education_requirements='{self.education_requirements}', work_experience={self.work_experience}, raise_range=({self.lower_raise_bound}-{self.upper_raise_bound}))"
                 
 class Education:
     def __init__(self,general_ed,years_in,cost) -> None:
         self.general_ed=general_ed
         self.years_in=years_in
         self.cost=cost
-#cost=0 years_in depends on user input        
+    def __str__(self)
+        return f"Job(general_ed={self.general_ed}, years_in='{self.years_in}', cost={self.cost}"
+#cost=0 for general eds years_in depends on user input        
 general_ed=Education(True,0,0)
 comp_sci=Education(False,0,100)
 economics=Education(False,0,123)
