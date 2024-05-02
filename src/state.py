@@ -1,8 +1,10 @@
+from src.action_space import Job, actions
+
 class State:
     """
     Represents the state of an individual in the simulation, including both static and stochastic attributes.
     """
-    def __init__(self, age, education_level, years_in_education, current_savings, expected_salary, retirement_age, inflation_rate, investment_return_rate, salary):
+    def __init__(self, age, education_level, years_in_education, current_savings, retirement_age, inflation_rate, investment_return_rate, salary):
         """
         Initialize the state of an individual with given parameters.
         
@@ -11,7 +13,6 @@ class State:
         - education_level (str): Highest level of education achieved.
         - years_in_education (int): Total years spent in education.
         - current_savings (float): Current amount of savings.
-        - expected_salary (float): Expected average salary.
         - retirement_age (int): Age at which the individual plans to retire.
         - inflation_rate (float): Annual inflation rate.
         - investment_return_rate (float): Annual return rate from investments.
@@ -21,7 +22,6 @@ class State:
         self.education_level = education_level
         self.years_in_education = years_in_education
         self.current_savings = current_savings
-        self.expected_salary = expected_salary
         self.retirement_age = retirement_age
         self.inflation_rate = inflation_rate
         self.investment_return_rate = investment_return_rate
@@ -34,7 +34,7 @@ class State:
         This method returns a formatted string that includes all the attributes of the State instance with their respective values,
         making it easier to understand the current state of an object when printed or logged.
         """
-        return f"State(age={self.age}, education_level='{self.education_level}', years_in_education={self.years_in_education}, current_savings={self.current_savings}, expected_salary={self.expected_salary}, retirement_age={self.retirement_age}, inflation_rate={self.inflation_rate}, investment_return_rate={self.investment_return_rate}, salary={self.salary})"
+        return f"State(age={self.age}, education_level='{self.education_level}', years_in_education={self.years_in_education}, current_savings={self.current_savings}, retirement_age={self.retirement_age}, inflation_rate={self.inflation_rate}, investment_return_rate={self.investment_return_rate}, salary={self.salary})"
 
 
 class Parameters:
@@ -107,7 +107,6 @@ initial_state = State(
     education_level='High School',
     years_in_education=12,
     current_savings=10000,
-    expected_salary=30000,
     retirement_age=65,
     inflation_rate=0.02,
     investment_return_rate=0.05,
@@ -128,3 +127,4 @@ optimal_action, expected_value = bellman_equation(initial_state, simulation_para
 # Print the results
 print("Optimal Action:", optimal_action)
 print("Expected Value of Optimal Action:", expected_value)
+
