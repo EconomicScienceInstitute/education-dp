@@ -30,12 +30,15 @@ def get_salary(state):
   else:
     y = 4
   
-  salary = random.randint(min_salary[x, y], max_salary[x, y])
+  salary = random.randint(min_salary[x, y], max_salary[x, y])*1000
   return salary
 
 def possible_states(state, action):
   poss_salary1 = get_salary(state)
   poss_salary2 = get_salary(state)
+
+  cost_of_living = 30000
+
   if action == 1:
     total_savings1 = state[2] - 20000 + poss_salary1
     total_savings2 = state[2] - 20000 + poss_salary2
@@ -48,8 +51,8 @@ def possible_states(state, action):
     years_exp = state[1] + 1
     years_edu = state[0]
   # state[3] + 1 adds one year to age for terminal state purposes
-  state1 = (years_edu, years_exp, total_savings1, state[3] + 1)
-  state2 = (years_edu, years_exp, total_savings2, state[3] + 1)
+  state1 = (years_edu, years_exp, total_savings1-cost_of_living, state[3] + 1)
+  state2 = (years_edu, years_exp, total_savings2-cost_of_living, state[3] + 1)
 
   # return state
   return [(0.5, state1),
