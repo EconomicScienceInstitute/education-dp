@@ -47,9 +47,9 @@ def possible_states(state, action):
     total_savings2 = state[2] + poss_salary2
     years_exp = state[1] + 1
     years_edu = state[0]
-
-  state1 = (years_edu, years_exp, total_savings1)
-  state2 = (years_edu, years_exp, total_savings2)
+  # state[3] + 1 adds one year to age for terminal state purposes
+  state1 = (years_edu, years_exp, total_savings1, state[3] + 1)
+  state2 = (years_edu, years_exp, total_savings2, state[3] + 1)
 
   # return state
   return [(0.5, state1),
@@ -58,3 +58,34 @@ def possible_states(state, action):
 def reward(state, action):
   # return the current savings
   return state[2]
+
+def available_actions(state):
+  return [0, 1]
+
+def terminal_state(state):
+  if state[3] >= 65:
+    return True, (state[2], -1)
+  else:
+    return False, ()
+
+cache = {}
+def bellman(state):
+  is_terminal, term_return = terminal_state(state)
+  if is_terminal:
+    return term_return
+  if state in cache:
+    return cache[state]
+  best_value = None
+  best_action = None
+  for action in available_actions(state):
+    exp_action_value = 0
+    for p_state, next_state in possible_states(state, action):
+      exp_action_value += p_state*(reward(state, action) + bellman(next_state)[0])
+    if best_value is None or exp_action_value > best_value:
+      best_value = exp_action_value
+      best_action = action
+  cache[state] = (best_value, best_action)
+  return best_value, best_action
+
+# example bellman
+print(bellman((0, 0, 0, 18)))
