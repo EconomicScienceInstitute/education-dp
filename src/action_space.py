@@ -2,8 +2,9 @@ import random
 class Job:
     def __init__(self,salary, education_requirements, work_requirements,low_raise,high_raise,years_in) -> None:
         self.salary=salary
-        self.education_requirements=education_requirements
-        self.work_experience=work_requirements
+        self.education_requirements=education_requirements #I don't think we need this anymore either... folding in requirements to years_schooling 
+        #because type of school you are eligible for is dependent only on years_schooling
+        #self.work_experience=work_requirements #getting rid of this
         self.years_since_raise=0
         self.lower_raise_bound=low_raise
         self.upper_raise_bound=high_raise
@@ -30,20 +31,21 @@ edu_board=[general_ed,comp_sci,economics,literature,math]
 #Job board would be the same sort of thing just defining everything
 
 
-def check_job_requirements(state, job):
-    #check if state stuff passes requirements
-    return True
+# def check_job_requirements(state, job):
+#     #check if state stuff passes requirements
+#     return True
 
 def check_edu_requirements(state, edu):
     #check if state stuff passes requirements
+    #requirements is just years_schooling
     return True
 
-def job_options(state, jobs):
-    possible_jobs=[]
-    for job in jobs:
-        if check_job_requirements(state,job):
-            possible_jobs.append(job)
-    return possible_jobs
+# def job_options(state, jobs): #not doing job_options anymore. 
+#     possible_jobs=[]
+#     for job in jobs:
+#         if check_job_requirements(state,job):
+#             possible_jobs.append(job)
+#     return possible_jobs
 
 def education_options(state, education):
     possible_edu=[]
@@ -55,3 +57,4 @@ def education_options(state, education):
 def actions(state, jobs, education):
     actions=job_options(state,jobs)+education_options(state,education)
     return actions
+
