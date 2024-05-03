@@ -63,6 +63,11 @@ def reward(state, action):
   return state[2]
 
 def available_actions(state):
+
+  # preventing education past 8 years
+  if state[0] == 8:
+    return [0]
+
   return [0, 1]
 
 def terminal_state(state):
