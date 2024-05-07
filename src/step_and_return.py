@@ -1,8 +1,9 @@
 import math
 import numpy as np
+import pandas as pd
 import random
 
-def get_salary(state):
+def get_salary(state, action):
     """
     Calculate a random salary based on the provided state.
 
@@ -14,6 +15,9 @@ def get_salary(state):
     Returns:
         int: A random salary based on the state.
     """
+
+    if action == 1:
+        return 0
     # Define salary ranges based on education and experience levels
     min_salary = np.array([[24, 30, 40, 55, 85],
                            [45, 60, 70, 80, 100],
@@ -64,8 +68,8 @@ def possible_states(state, action):
     Returns:
         list of tuples: A list containing tuples representing possible next states and their probabilities.
     """
-    poss_salary1 = get_salary(state)
-    poss_salary2 = get_salary(state)
+    poss_salary1 = get_salary(state,action)
+    poss_salary2 = get_salary(state,action)
 
     # Define the cost of living
     cost_of_living = 30000
@@ -184,4 +188,48 @@ def bellman(state):
     return best_value, best_action
 
 # Example of using the Bellman equation to find the optimal action and value for a given state
-print(bellman((0, 0, 0, 18)))
+#print(bellman((0, 0, 0, 18)))
+'''
+start_state = (0, 0, 0, 18)
+state = start_state
+state_actions = []
+while not terminal_state(state)[0]:
+  best_value, best_action = bellman(state)
+  state_actions.append((state, best_action))
+  states = possible_states(state, best_action)
+  state = random.choices([s[1] for s in states],
+                          weights=[s[0] for s in states])[0]
+print(state_actions)
+'''
+
+def optimal_career_path_to_df(start_state):
+    """
+    Simulate a career path based on a start state using the Bellman equation.
+
+    Args:
+        start_state (tuple): Initial state tuple (Years of Education, Years of Experience, Total Savings, Age)
+
+    Returns:
+        DataFrame: A pandas DataFrame containing the simulated career path.
+    """
+    state = start_state
+    state_actions = []
+    
+    while not terminal_state(state)[0]:
+        best_value, best_action = bellman(state)
+        state_actions.append((state, best_action))
+        states = possible_states(state, best_action)
+        state = random.choices([s[1] for s in states], weights=[s[0] for s in states])[0]
+    
+    # Extract data from state_actions to create a DataFrame
+    data = {
+        'Years of Education': [s[0][0] for s in state_actions],
+        'Years of Experience': [s[0][1] for s in state_actions],
+        'Total Savings': [s[0][2] for s in state_actions],
+        'Age': [s[0][3] for s in state_actions],
+        'Salary': [get_salary(s[0], s[1]) for s in state_actions]
+    }
+
+    df = pd.DataFrame(data)
+    return df
+
