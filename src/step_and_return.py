@@ -74,17 +74,29 @@ def possible_states(state, action):
     # Define the cost of living
     cost_of_living = 30000
 
+    savings = state[2]
+
+    # interest calculation
+    if savings < 0:
+        savings *= -0.065
+    else:
+        # growth between 3 & 9%
+        savings *= random.random() * 0.06 + 0.03
+
+    # round savings to the nearest 1000
+    savings = math.round(savings, 1e3)
+
     if action == 1:
         # If action is to advance education, subtract education cost from savings
-        total_savings1 = state[2] - 20000 + poss_salary1
-        total_savings2 = state[2] - 20000 + poss_salary2
+        total_savings1 = savings - 20000 + poss_salary1
+        total_savings2 = savings - 20000 + poss_salary2
 
         years_edu = state[0] + 1
         years_exp = state[1]
     else:
         # If no action is taken, add salary to savings
-        total_savings1 = state[2] + poss_salary1
-        total_savings2 = state[2] + poss_salary2
+        total_savings1 = savings + poss_salary1
+        total_savings2 = savings + poss_salary2
         years_exp = state[1] + 1
         years_edu = state[0]
     
