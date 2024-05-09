@@ -3,7 +3,7 @@ import numpy as np
 import pandas as pd
 import random
 
-def get_salary(state, action):
+def get_last_years_salary(state, action):
     """
     Calculate a random salary based on the provided state.
 
@@ -13,12 +13,13 @@ def get_salary(state, action):
             - Years of experience (int) idx: 1
             - Savings (int, rounded to the nearest thousand) idx: 2
             - Age (int) idx: 3
+            - Salary (int) idx: 4 in thousands
     
     Returns:
-        int: A random salary based on the state.
+        int: A salary based on the state - which includes last year's salary.
     """
     # TODO could modify the get_salary function to return a salary based on the state
-    # wouldn't that require us to add salary to the state? 
+    # wouldn't that require us to add salary to the state? [YES]
     if action == 1: #go to school
         return 0
     # Define salary ranges based on education and experience levels
@@ -52,9 +53,14 @@ def get_salary(state, action):
     else:
         y = 4
     
-    # Generate a random salary within the determined range
-    salary = random.randint(min_salary[x, y], max_salary[x, y]) * 1000
-    return salary
+    last_years_salary = random.randint(min_salary[x, y], max_salary[x, y]) * 1000
+    # possible_raises = [1.0,1.03,1.05,1.1,1.22]
+    state[4] = last_years_salary
+    #state[4] = last_years_salary*possible_raises #then you're picking last year's salary new every time. which makes no sense 
+    #state[4] = last_years_salary * random.choice(possible_raises) this is when you move forward another year working.
+    return state # , action
+
+
 
 def possible_states(state, action):
     """
@@ -66,13 +72,19 @@ def possible_states(state, action):
             - Years of experience (int) idx 1
             - Total savings (int) idx 2
             - Age (int) idx 3
+            - Salary (int, in thousands) idx 4
         action (int): The action to be taken, where 0 represents no action and 1 represents advancing education.
 
     Returns:
         list of tuples: A list containing tuples representing possible next states and their probabilities.
     """
-    poss_salary1 = get_salary(state,action)
-    poss_salary2 = get_salary(state,action)
+    possible_raises = [1.0,1.03,1.05,1.1,1.22]
+
+    if action == 1: #go to school
+        salary = state[4] * 1
+    elif action == 0: #go to work
+        poss_salary1 = state[4]*random.choice(possible_raises)
+        poss_salary2 = state[4]*random.choice(possible_raises)
 
     # Define the cost of living
     cost_of_living = 30000
@@ -104,8 +116,8 @@ def possible_states(state, action):
         years_edu = state[0]
     
     # Create possible next states
-    state1 = (years_edu, years_exp, total_savings1 - cost_of_living, state[3] + 1)
-    state2 = (years_edu, years_exp, total_savings2 - cost_of_living, state[3] + 1)
+    state1 = (years_edu, years_exp, total_savings1 - cost_of_living, state[3] + 1, poss_salary1)
+    state2 = (years_edu, years_exp, total_savings2 - cost_of_living, state[3] + 1, poss_salary2)
 
     # Return possible next states with equal probabilities
     return [(0.5, state1),
@@ -121,6 +133,7 @@ def reward(state, action, loe, smug, handy):
             - Years of experience (int) idx 1
             - Total savings (int) idx 2
             - Age (int) idx 3
+            - Salary (int) idx 4, in thousands
         action (int): The action taken, where 0 represents no action and 1 represents advancing education.
         loe (float): love for education, can be thought of as the utility of 1 year of education
         smug (float): smugness factor, can be thought of as a value for holding the degree for 1 year or a lifestyle preference
@@ -203,6 +216,7 @@ def bellman(state, loe, smug, handy):
             - Years of experience (int) idx 1
             - Total savings (int) idx 2
             - Age (int) idx 3
+            - salary (int) idx 4
         loe (float): love for education, can be thought of as the utility of 1 year of education
         smug (float): smugness factor, can be thought of as a value for holding the degree for 1 year or a lifestyle preference
         handy (float): handyman factor, can be thought of as a value for working with ones hands, for people who did not finish college
@@ -278,8 +292,7 @@ def optimal_career_path_to_df(start_state, loe = 0, smug = 0, handy = 0):
         'Years of Experience': [s[0][1] for s in state_actions],
         'Total Savings': [s[0][2] for s in state_actions],
         'Age': [s[0][3] for s in state_actions],
-        'Salary': [get_salary(s[0], s[1]) for s in state_actions]
+        'Salary': [(s[0][4]) for s in state_actions]
     }
     df = pd.DataFrame(data)
     return df
-
