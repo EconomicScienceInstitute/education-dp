@@ -131,8 +131,8 @@ def reward(state, action, loe, smug, handy, balance_factor = 0.5):
     """
     # TODO could modify the reward function to shape preferences
     immediate_reward = state[2]
-    if action == 1: # If action is to advance education, add love for education to reward
-        immediate_reward += loe * 1e4
+    if action == 1: # If action is to advance education, add increased love for education to reward
+        immediate_reward += loe * 2e4  # Increased multiplier for education
     if state[0] >= 8:
         immediate_reward += smug * 8e4 # we have a phd, add smugness factor to reward
     elif state[0] >= 6:
@@ -148,6 +148,15 @@ def reward(state, action, loe, smug, handy, balance_factor = 0.5):
         immediate_reward += handy * 2e4
     elif state[1] >= 5:
         immediate_reward += handy * 1e4
+
+
+    # Additional rewards for reaching educational milestones
+    if state[0] == 4:  # Bachelor's degree completed
+        immediate_reward += 50000  # Bonus reward
+    elif state[0] == 6:  # Master's degree completed
+        immediate_reward += 75000  # Bonus reward
+    elif state[0] == 8:  # PhD completed
+        immediate_reward += 100000  # Bonus reward
     # New term to reward balance between education and experience
     balance_reward = balance_factor * min(state[0], state[1]) * 1e4
     immediate_reward += balance_reward
