@@ -110,7 +110,7 @@ def possible_states(state, action):
     return [(0.5, state1),
             (0.5, state2)]
 
-def reward(state, action, loe, smug, handy):
+def reward(state, action, loe, smug, handy, balance_factor = 0.5):
     """
     Calculate the reward based on the current state and action.
 
@@ -124,6 +124,7 @@ def reward(state, action, loe, smug, handy):
         loe (float): love for education, can be thought of as the utility of 1 year of education
         smug (float): smugness factor, can be thought of as a value for holding the degree for 1 year or a lifestyle preference
         handy (float): handyman factor, can be thought of as a value for working with ones hands and or perfecting a craft based on yoe
+        balance_factor (float): a factor to reward balance between education and experience
 
     Returns:
         int: The reward, which is the current total savings.
@@ -147,6 +148,9 @@ def reward(state, action, loe, smug, handy):
         immediate_reward += handy * 2e4
     elif state[1] >= 5:
         immediate_reward += handy * 1e4
+    # New term to reward balance between education and experience
+    balance_reward = balance_factor * min(state[0], state[1]) * 1e4
+    immediate_reward += balance_reward
     return immediate_reward
 
 def available_actions(state):
