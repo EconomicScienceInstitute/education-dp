@@ -9,16 +9,17 @@ def get_salary(state, action):
 
     Args:
         state (tuple): A tuple representing the current state, containing:
-            - Years of education (int)
-            - Years of experience (int)
-            - Savings (int)
-            - Age (int)
+            - Years of education (int) idx: 0
+            - Years of experience (int) idx: 1
+            - Savings (int, rounded to the nearest thousand) idx: 2
+            - Age (int) idx: 3
     
     Returns:
         int: A random salary based on the state.
     """
     # TODO could modify the get_salary function to return a salary based on the state
-    if action == 1:
+    # wouldn't that require us to add salary to the state? 
+    if action == 1: #go to school
         return 0
     # Define salary ranges based on education and experience levels
     min_salary = np.array([[30, 36, 48, 60, 90],
@@ -31,7 +32,7 @@ def get_salary(state, action):
                            [80, 95, 105, 120, 210]])
     
     # Determine the range index based on years of education and experience
-    if state[0] < 4:
+    if state[0] < 4: #education
         x = 0
     elif state[0] < 6:
         x = 1
@@ -40,7 +41,7 @@ def get_salary(state, action):
     else:
         x = 3
 
-    if state[1] < 5:
+    if state[1] < 5: #experience
         y = 0
     elif state[1] < 10:
         y = 1
@@ -61,10 +62,10 @@ def possible_states(state, action):
 
     Args:
         state (tuple): A tuple representing the current state, containing:
-            - Years of education (int)
-            - Years of experience (int)
-            - Total savings (int)
-            - Age (int)
+            - Years of education (int) idx 0
+            - Years of experience (int) idx 1
+            - Total savings (int) idx 2
+            - Age (int) idx 3
         action (int): The action to be taken, where 0 represents no action and 1 represents advancing education.
 
     Returns:
@@ -116,10 +117,10 @@ def reward(state, action, loe, smug, handy):
 
     Args:
         state (tuple): A tuple representing the current state, containing:
-            - Years of education (int)
-            - Years of experience (int)
-            - Total savings (int)
-            - Age (int)
+            - Years of education (int) idx 0 
+            - Years of experience (int) idx 1
+            - Total savings (int) idx 2
+            - Age (int) idx 3
         action (int): The action taken, where 0 represents no action and 1 represents advancing education.
         loe (float): love for education, can be thought of as the utility of 1 year of education
         smug (float): smugness factor, can be thought of as a value for holding the degree for 1 year or a lifestyle preference
@@ -129,8 +130,8 @@ def reward(state, action, loe, smug, handy):
         int: The reward, which is the current total savings.
     """
     # TODO could modify the reward function to shape preferences
-    immediate_reward = state[2]
-    if action == 1: # If action is to advance education, add love for education to reward
+    immediate_reward = state[2] #reward is initially based on savings
+    if action == 1: # If action is to advance education, add love for education to reward 
         immediate_reward += loe * 1e4
     if state[0] >= 8:
         immediate_reward += smug * 8e4 # we have a phd, add smugness factor to reward
@@ -139,15 +140,16 @@ def reward(state, action, loe, smug, handy):
     elif state[0] >= 4:
         immediate_reward += smug * 1e4 # we have a bachelors, add smugness factor to reward
 
-    if state[1] >= 20:
-        immediate_reward += handy * 4e4 # we have 20 years of experience, add handyman factor to reward
-    elif state[1] >= 15:
-        immediate_reward += handy * 3e4 # we have 15 years of experience, add handyman factor to reward
-    elif state[1] >= 10:
-        immediate_reward += handy * 2e4
-    elif state[1] >= 5:
-        immediate_reward += handy * 1e4
-    return immediate_reward
+    if state[0] <=4: #you only get the handyman reward if you didn't finish college. if finish college, get desk job
+        if state[1] >= 20: 
+            immediate_reward += handy * 4e4 # we have 20 years of experience, add handyman factor to reward
+        elif state[1] >= 15:
+            immediate_reward += handy * 3e4 # we have 15 years of experience, add handyman factor to reward
+        elif state[1] >= 10:
+            immediate_reward += handy * 2e4
+        elif state[1] >= 5:
+            immediate_reward += handy * 1e4
+        return immediate_reward
 
 def available_actions(state):
     """
@@ -155,13 +157,13 @@ def available_actions(state):
 
     Args:
         state (tuple): A tuple representing the current state, containing:
-            - Years of education (int)
-            - Years of experience (int)
-            - Total savings (int)
-            - Age (int)
+            - Years of education (int) idx 0 
+            - Years of experience (int) idx 1
+            - Total savings (int) idx 2
+            - Age (int) idx 3
 
     Returns:
-        list: A list containing available actions, where 0 represents no action and 1 represents advancing education.
+        list: A list containing available actions, where 0 represents no (relevant) action (go to work) and 1 represents advancing education.
     """
     # Prevent education past 8 years
     if state[0] == 8:
@@ -175,10 +177,10 @@ def terminal_state(state):
 
     Args:
         state (tuple): A tuple representing the current state, containing:
-            - Years of education (int)
-            - Years of experience (int)
-            - Total savings (int)
-            - Age (int)
+            - Years of education (int) idx 0 
+            - Years of experience (int) idx 1
+            - Total savings (int) idx 2
+            - Age (int) idx 3
 
     Returns:
         tuple: A tuple containing a boolean indicating if the state is terminal and, if so, the terminal return.
@@ -197,13 +199,13 @@ def bellman(state, loe, smug, handy):
 
     Args:
         state (tuple): A tuple representing the current state, containing:
-            - Years of education (int)
-            - Years of experience (int)
-            - Total savings (int)
-            - Age (int)
+            - Years of education (int) idx 0 
+            - Years of experience (int) idx 1
+            - Total savings (int) idx 2
+            - Age (int) idx 3
         loe (float): love for education, can be thought of as the utility of 1 year of education
         smug (float): smugness factor, can be thought of as a value for holding the degree for 1 year or a lifestyle preference
-        handy (float): handyman factor, can be thought of as a value for working with ones hands and or perfecting a craft based on yoe
+        handy (float): handyman factor, can be thought of as a value for working with ones hands, for people who did not finish college
 
     Returns:
         tuple: A tuple containing the optimal value and action for the given state.
