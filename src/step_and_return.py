@@ -3,6 +3,7 @@ import numpy as np
 import pandas as pd
 import random
 
+
 def get_salary(state, action):
     """
     Calculate a random salary based on the provided state.
@@ -13,7 +14,7 @@ def get_salary(state, action):
             - Years of experience (int)
             - Savings (int)
             - Age (int)
-    
+
     Returns:
         int: A random salary based on the state.
     """
@@ -29,7 +30,7 @@ def get_salary(state, action):
                            [60, 70, 100, 120, 200],
                            [85, 100, 110, 125, 225],
                            [80, 95, 105, 120, 210]])
-    
+
     # Determine the range index based on years of education and experience
     if state[0] < 4:
         x = 0
@@ -50,10 +51,11 @@ def get_salary(state, action):
         y = 3
     else:
         y = 4
-    
+
     # Generate a random salary within the determined range
     salary = random.randint(min_salary[x, y], max_salary[x, y]) * 1000
     return salary
+
 
 def possible_states(state, action):
     """
@@ -70,8 +72,8 @@ def possible_states(state, action):
     Returns:
         list of tuples: A list containing tuples representing possible next states and their probabilities.
     """
-    poss_salary1 = get_salary(state,action)
-    poss_salary2 = get_salary(state,action)
+    poss_salary1 = get_salary(state, action)
+    poss_salary2 = get_salary(state, action)
 
     # Define the cost of living
     cost_of_living = 30000
@@ -84,6 +86,16 @@ def possible_states(state, action):
     else:
         # growth between 3 & 9%
         savings *= 1 + random.random() * 0.06 + 0.03
+
+    # unexpected expense (e.g. big medical expense, DUI, etc.)
+    dui = random.random()
+    money_lost = 200000*random.random() + 50000
+
+    if (dui < 0.05):
+        if (savings >= money_lost):
+            savings -= money_lost
+        else:
+            savings = 0
 
     # round savings to the nearest 1000
     savings = round(savings, -3)
@@ -101,14 +113,17 @@ def possible_states(state, action):
         total_savings2 = savings + poss_salary2
         years_exp = state[1] + 1
         years_edu = state[0]
-    
+
     # Create possible next states
-    state1 = (years_edu, years_exp, total_savings1 - cost_of_living, state[3] + 1)
-    state2 = (years_edu, years_exp, total_savings2 - cost_of_living, state[3] + 1)
+    state1 = (years_edu, years_exp, total_savings1 -
+              cost_of_living, state[3] + 1)
+    state2 = (years_edu, years_exp, total_savings2 -
+              cost_of_living, state[3] + 1)
 
     # Return possible next states with equal probabilities
     return [(0.5, state1),
             (0.5, state2)]
+
 
 def reward(state, action, loe, smug, handy):
     """
@@ -130,24 +145,27 @@ def reward(state, action, loe, smug, handy):
     """
     # TODO could modify the reward function to shape preferences
     immediate_reward = state[2]
-    if action == 1: # If action is to advance education, add love for education to reward
+    if action == 1:  # If action is to advance education, add love for education to reward
         immediate_reward += loe * 1e4
     if state[0] >= 8:
-        immediate_reward += smug * 8e4 # we have a phd, add smugness factor to reward
+        immediate_reward += smug * 8e4  # we have a phd, add smugness factor to reward
     elif state[0] >= 6:
-        immediate_reward += smug * 4e4 # we have a masters, add smugness factor to reward
+        immediate_reward += smug * 2e4  # we have a masters, add smugness factor to reward
     elif state[0] >= 4:
-        immediate_reward += smug * 1e4 # we have a bachelors, add smugness factor to reward
+        immediate_reward += smug * 1e4  # we have a bachelors, add smugness factor to reward
 
     if state[1] >= 20:
-        immediate_reward += handy * 4e4 # we have 20 years of experience, add handyman factor to reward
+        # we have 20 years of experience, add handyman factor to reward
+        immediate_reward += handy * 4e4
     elif state[1] >= 15:
-        immediate_reward += handy * 3e4 # we have 15 years of experience, add handyman factor to reward
+        # we have 15 years of experience, add handyman factor to reward
+        immediate_reward += handy * 3e4
     elif state[1] >= 10:
         immediate_reward += handy * 2e4
     elif state[1] >= 5:
         immediate_reward += handy * 1e4
     return immediate_reward
+
 
 def available_actions(state):
     """
@@ -169,6 +187,7 @@ def available_actions(state):
 
     return [0, 1]
 
+
 def terminal_state(state):
     """
     Check if the current state is a terminal state.
@@ -185,11 +204,14 @@ def terminal_state(state):
     """
     # Terminal state reached at age 65
     if state[3] >= 65:
-        return True, (state[2], -1)  # Return savings and a special action value indicating terminal state
+        # Return savings and a special action value indicating terminal state
+        return True, (state[2], -1)
     else:
         return False, ()
 
+
 cache = {}
+
 
 def bellman(state, loe, smug, handy):
     """
@@ -219,23 +241,24 @@ def bellman(state, loe, smug, handy):
         exp_action_value = 0
         for p_state, next_state in possible_states(state, action):
             # Calculate the expected action value using Bellman equation
-            exp_action_value += p_state * (reward(state, 
+            exp_action_value += p_state * (reward(state,
                                                   action,
                                                   loe,
                                                   smug,
-                                                  handy) 
-                                            + bellman(next_state,
-                                                      loe,
-                                                      smug,
-                                                      handy)[0])
+                                                  handy)
+                                           + bellman(next_state,
+                                                     loe,
+                                                     smug,
+                                                     handy)[0])
         if best_value is None or exp_action_value > best_value:
             best_value = exp_action_value
             best_action = action
     cache[state] = (best_value, best_action)
     return best_value, best_action
 
+
 # Example of using the Bellman equation to find the optimal action and value for a given state
-#print(bellman((0, 0, 0, 18)))
+# print(bellman((0, 0, 0, 18)))
 '''
 start_state = (0, 0, 0, 18)
 state = start_state
@@ -249,7 +272,8 @@ while not terminal_state(state)[0]:
 print(state_actions)
 '''
 
-def optimal_career_path_to_df(start_state, loe = 0, smug = 0, handy = 0):
+
+def optimal_career_path_to_df(start_state, loe=0, smug=0, handy=0):
     """
     Simulate a career path based on a start state using the Bellman equation.
 
@@ -263,13 +287,14 @@ def optimal_career_path_to_df(start_state, loe = 0, smug = 0, handy = 0):
     """
     state = start_state
     state_actions = []
-    
+
     while not terminal_state(state)[0]:
         best_value, best_action = bellman(state, loe, smug, handy)
         state_actions.append((state, best_action))
         states = possible_states(state, best_action)
-        state = random.choices([s[1] for s in states], weights=[s[0] for s in states])[0]
-    
+        state = random.choices([s[1] for s in states], weights=[
+                               s[0] for s in states])[0]
+
     # Extract data from state_actions to create a DataFrame
     data = {
         'Years of Education': [s[0][0] for s in state_actions],
@@ -280,4 +305,3 @@ def optimal_career_path_to_df(start_state, loe = 0, smug = 0, handy = 0):
     }
     df = pd.DataFrame(data)
     return df
-

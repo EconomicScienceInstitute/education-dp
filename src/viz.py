@@ -8,7 +8,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 
-CREATE_NEW_DF = True # Change to false if you want to use the existing CSV file
+CREATE_NEW_DF = True  # Change to false if you want to use the existing CSV file
 CSV_PATH = 'career_path.csv'
 
 if CREATE_NEW_DF:
@@ -31,15 +31,16 @@ else:
     df = pd.read_csv(CSV_PATH)
 
 # Add a small constant value to the salary to ensure visibility in the plot
-df['Adjusted Salary'] = df['Salary'] + 10000  # Adds a minimum size to each bubble
+# Adds a minimum size to each bubble
+df['Adjusted Salary'] = df['Salary'] + 10000
 
 fig = px.scatter(
     df,
     x='Years of Experience',
-    y='Years of Education',
+    y='Total Savings',
     size='Adjusted Salary',
     animation_frame='Age',
-    color='Total Savings',
+    color='Years of Education',
     hover_data={
         'Adjusted Salary': False,  # Do not show Adjusted Salary
         'Salary': True,  # Show actual Salary
@@ -58,7 +59,7 @@ fig = px.scatter(
         'start_state': 'Starting State ID',
     },
     range_x=[-2, 50],  # Set the range for the X-axis
-    range_y=[-2, 10],  # Set the range for the Y-axis
+    range_y=[-2, 20000000],  # Set the range for the Y-axis
     color_continuous_scale='RdYlGn'  # Red to Green color scale
 )
 
