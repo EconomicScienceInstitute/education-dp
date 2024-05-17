@@ -18,7 +18,10 @@ if CREATE_NEW_DF:
     start_states = [((0, 0, 0, 18), 0, 5, 0),
                     ((0, 0, 0, 24), 0, 0, 20),
                     ((0, 0, 0, 30), 0, 10, 0),
-                    ((0, 0, 0, 40), 40, 0, 0)]
+                    ((0, 0, 0, 40), 40, 0, 0),
+                    ((4, 5, 10000, 25), 10, 5, 5),  # Bachelor's degree, some experience
+                    ((6, 10, 20000, 30), 15, 10, 10),  # Master's degree, significant experience
+                    ((2, 0, 5000, 22), 5, 0, 0)]  # Some college, no experience
 
     for i, (start_state, loe, smug, handy) in enumerate(start_states):
         df = optimal_career_path_to_df(start_state, loe, smug, handy)
